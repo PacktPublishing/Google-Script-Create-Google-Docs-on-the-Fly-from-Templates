@@ -1,0 +1,12 @@
+function onOpen() {
+  SpreadsheetApp.getUi()
+  .createMenu('Advanced').addItem('Create','showDialog').addItem('Build','bFields').addToUi();
+}
+
+function showDialog(){
+  
+}
+
+function bFields(){
+  
+}

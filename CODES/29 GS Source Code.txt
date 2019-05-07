@@ -1,0 +1,72 @@
+function onOpen() {
+    SpreadsheetApp.getUi().createMenu('Advanced').addItem('Create', 'showDialog').addItem('Build', 'bFields').addToUi();
+}
+
+function addData(data){
+    var ss = SpreadsheetApp.getActiveSpreadsheet();
+    var sheet = ss.getSheetByName("created");
+    data.fileNewName = (data.namex) ? data.namex : "No Name";
+    var newDoc = genDoc(data);
+    sheet.appendRow([data.fileNewName,newDoc,data.oid, Date(),"https://docs.google.com/document/d/" + newDoc + "/edit" ]);
+}
+
+function genDoc(data){
+  var source = DriveApp.getFileById(data.oid);
+  var targetFolder = DriveApp.getFolderById('**********************************');
+  var newFile = source.makeCopy(data.fileNewName,targetFolder);
+  var target = DocumentApp.openById(newFile.getId());
+  var body = target.getBody(); 
+  var replaceText = data.fList;
+  var result = replaceText.split(",");
+  for(var x=0;x<result.length;x++){
+    body.replaceText('\\${'+result[x]+'}', data[result[x]]);
+  }
+  return target.getId();
+}
+
+function showDialog() {
+    var html = HtmlService.createHtmlOutputFromFile('picker');
+    html.setSandboxMode(HtmlService.SandboxMode.IFRAME).setWidth(1200).setHeight(800);
+    SpreadsheetApp.getUi().showModalDialog(html, 'Create Maker');
+}
+
+function items() {
+    var ss = SpreadsheetApp.getActiveSpreadsheet();
+    var sheet = ss.getSheetByName("list");
+    return sheet.getDataRange().getValues();
+}
+
+function bFields() {
+    var ss = SpreadsheetApp.getActiveSpreadsheet();
+    var sheet = ss.getSheetByName("list");
+    sheet.deleteRows(2, sheet.getLastRow());
+    var gContents = DriveApp.getFoldersByName('_Templates').next().getFilesByType(MimeType.GOOGLE_DOCS);
+    while (gContents.hasNext()) {
+        var file = gContents.next();
+        if (file.getId()) {
+            var target = DocumentApp.openById(file.getId());
+            var body = target.getText();
+            var tempVar = body.match(/\$\{.*?}/g);
+            removeDup(tempVar);
+            //Logger.log(tempVar);
+            for (var x = 0; x < tempVar.length; x++) {
+                tempVar[x] = tempVar[x].replace(/\$\{/, '').replace(/\}/, '');
+            }
+            //Logger.log(tempVar);      
+        }
+        var data = [file.getId(), file.getName(), tempVar.toString(), "https://docs.google.com/document/d/" + file.getId() + "/edit"];
+        sheet.appendRow(data);
+    }
+}
+
+function removeDup(array) {
+    var index = {};
+    for (var x = array.length - 1; x >= 0; x--) {
+        if (array[x] in index) {
+            array.splice(x, 1);
+        }
+        else {
+            index[array[x]] = true;
+        }
+    }
+}

@@ -1,0 +1,5 @@
+Increase the power of your favorite Google apps — like Calendar, Docs, Drive, Gmail, and Sheets. Do more with Google. All on a JavaScript platform in the cloud.
+
+
+
+https://developers.google.com/apps-script/

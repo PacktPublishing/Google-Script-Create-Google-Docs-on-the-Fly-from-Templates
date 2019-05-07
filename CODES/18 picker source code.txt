@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <base target="_top">
+  </head>
+  <body>
+  <div>
+    <h1>Create your Document here</h1>
+    <form id='myForm'>
+      File : <input id="namex" name="namex" type="input" ><br>
+      Select Template :<br>
+      <select name="tempx" id="tempx" >
+      <option value=""></option>
+      </select>
+      <div id="output"></div>
+      <div>
+      <input type="button" value="create" onclick="save()" id="makerButton" disabled>
+      <input type="button" value="cancel" onclick="google.script.host.close()" id="cancelButton" >
+      </div>
+     </form>
+  </div>
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+    <script>
+    window.onload = init;
+    function init(){
+      google.script.run.withSuccessHandler(onSuccess).items();
+    }
+    function onSuccess(data){
+    console.log(data);
+    for(var x=1;x<(data.length);x++){
+     $('#tempx').append('<option value=\'{"oid":"' +data[x][0]+  '","flist":"' +data[x][2]+  '"}\'>' +data[x][1]+  '</option>');
+    }
+    
+    }
+   
+    $('#tempx').change(function(){
+    console.log(this.value);
+    var obj = JSON.parse(this.value);
+    var output = "";
+    var result = obj['flist'].split(',');
+    console.log(result);
+    for(var x=0;x<result.length;x++){
+       output += '<div>'+result[x]+' = <input id="'+result[x]+'" name="'+result[x]+'" type="input" placeholder="'+result[x]+'" ></div>';
+    }
+    $('#output').html(output);
+    $('#makerButton').prop('disabled', false);
+    })
+   
+    
+    </script>
+  </body>
+</html>

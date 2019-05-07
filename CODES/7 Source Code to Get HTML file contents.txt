@@ -1,0 +1,16 @@
+function onOpen() {
+  SpreadsheetApp.getUi()
+  .createMenu('Advanced').addItem('Create','showDialog').addItem('Build','bFields').addToUi();
+}
+
+function showDialog(){
+  var html = HtmlService.createHtmlOutputFromFile('picker');
+  html.setSandboxMode(HtmlService.SandboxMode.IFRAME).setWidth(800).setHeight(600);
+  SpreadsheetApp.getUi()
+  .showModalDialog(html, 'Create Maker');
+  
+}
+
+function bFields(){
+  
+}
